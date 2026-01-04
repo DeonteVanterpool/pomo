@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"sync"
 	"time"
+
+	"github.com/gen2brain/beeep"
 )
 
 type TaskRunner struct {
@@ -170,6 +172,12 @@ func (t *TaskRunner) run() error {
 
 	}
 	t.notifier.Notify("Pomo", "Pomo session has completed!")
+	beeep.AppName = "Pomo"
+
+	err := beeep.Alert("Take a break", "Pomo session has completed!", nil)
+	if err != nil {
+		panic(err)
+	}
 	t.SetState(COMPLETE)
 	return nil
 }
