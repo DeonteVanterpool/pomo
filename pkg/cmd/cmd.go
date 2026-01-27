@@ -339,7 +339,7 @@ func New(config *pomo.Config) *cli.Cli {
 	app.Command("create c", "create a new task without starting", create(config))
 	app.Command("begin b", "begin requested pomodoro", begin(config))
 	app.Command("list l", "list historical tasks", list(config))
-	app.Command("complete c", "mark a task as completed", complete(config))
+	app.Command("complete cp", "mark a task as completed", complete(config))
 	app.Command("delete d", "delete a stored task", _delete(config))
 	app.Command("status st", "output the current status", _status(config))
 	return app
