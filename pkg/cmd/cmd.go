@@ -152,7 +152,7 @@ pomo complete 1
 				if err != nil {
 					return err
 				}
-				fmt.Printf("marked task %d as done\n", *taskId)
+				fmt.Printf("marked task %d as complete\n", *taskId)
 				return nil
 			}))
 		}
