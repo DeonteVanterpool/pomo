@@ -55,10 +55,6 @@ func (s Store) CreateTask(tx *sql.Tx, task Task) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	err = tx.QueryRow("SELECT last_insert_rowid() FROM task").Scan(&taskID)
-	if err != nil {
-		return -1, err
-	}
 	return taskID, nil
 }
 
