@@ -122,20 +122,18 @@ func create(config *pomo.Config) func(*cli.Cmd) {
 	}
 }
 
-func edit(config *pomo.Config) func(*cli.Cmd) {
+func complete(config *pomo.Config) func(*cli.Cmd) {
 	return func(cmd *cli.Cmd) {
 		cmd.Spec = "[OPTIONS] TASK_ID"
 		cmd.LongDesc = `
-Edit an existing task
+Mark a task as completed by setting the number of pomodoros
 
 Examples:
 
-# Remove pomodoros 2-4
-pomo edit --done 13
+pomo complete 1
 `
 		var (
-			taskId = cmd.IntArg("TASK_ID", -1, "ID of Pomodoro to edit")
-			done   = cmd.BoolOpt("D done", false, "mark the task as completed")
+			taskId = cmd.IntArg("TASK_ID", -1, "ID of task to complete")
 		)
 
 		cmd.Action = func() {
@@ -144,19 +142,17 @@ pomo edit --done 13
 			defer db.Close()
 			var task *pomo.Task
 			maybe(db.With(func(tx *sql.Tx) error {
-				if *done {
-					read, err := db.ReadTask(tx, *taskId)
-					if err != nil {
-						return err
-					}
-					task = read
-					task.NPomodoros = len(task.Pomodoros)
-					err = db.UpdateTask(tx, *taskId, *task)
-					if err != nil {
-						return err
-					}
-					fmt.Printf("marked task %d as done\n", *taskId)
+				read, err := db.ReadTask(tx, *taskId)
+				if err != nil {
+					return err
 				}
+				task = read
+				task.NPomodoros = len(task.Pomodoros)
+				err = db.UpdateTask(tx, *taskId, *task)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("marked task %d as done\n", *taskId)
 				return nil
 			}))
 		}
@@ -343,7 +339,7 @@ func New(config *pomo.Config) *cli.Cli {
 	app.Command("create c", "create a new task without starting", create(config))
 	app.Command("begin b", "begin requested pomodoro", begin(config))
 	app.Command("list l", "list historical tasks", list(config))
-	app.Command("edit e", "edit pomodoros for a task", edit(config))
+	app.Command("complete c", "mark a task as completed", complete(config))
 	app.Command("delete d", "delete a stored task", _delete(config))
 	app.Command("status st", "output the current status", _status(config))
 	return app
